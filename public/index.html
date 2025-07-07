@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>واکی‌تاکی پیشرفته</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        /* صفحه لاگین و ثبت نام */
+        .auth-page {
+            max-width: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 20px;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        @media (min-width: 768px) {
+            .auth-page {
+                max-width: 400px;
+                margin: 50px auto;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                min-height: auto;
+            }
+        }
+        
+        .auth-page h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4361ee;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #3a56d4;
+        }
+        
+        .toggle-auth {
+            text-align: center;
+            margin-top: 15px;
+        }
+        
+        .toggle-auth a {
+            color: #4361ee;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .error-message {
+            color: #f72585;
+            background: #ffeef2;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        /* صفحه چت */
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+        }
+        
+        .chat-header {
+            background: #4361ee;
+            color: white;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .user-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 14px;
+        }
+        
+        .admin-btn {
+            background: #f72585;
+            padding: 6px 12px;
+            border-radius: 5px;
+            font-size: 12px;
+            width: auto;
+        }
+        
+        @media (min-width: 768px) {
+            .chat-header {
+                padding: 15px 20px;
+            }
+            .user-info {
+                font-size: 16px;
+            }
+            .admin-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+        }
+        
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        @media (min-width: 768px) {
+            .chat-main {
+                flex-direction: row;
+            }
+        }
+        
+        .messages-panel {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column-reverse;
+            max-height: calc(100vh - 150px);
+        }
+        
+        .users-panel {
+            width: 100%;
+            border-top: 1px solid #eee;
+            padding: 15px;
+            overflow-y: auto;
+            max-height: 200px;
+        }
+        
+        @media (min-width: 768px) {
+            .users-panel {
+                width: 250px;
+                border-top: none;
+                border-left: 1px solid #eee;
+                max-height: none;
+            }
+        }
+        
+        .message {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s;
+            font-size: 14px;
+        }
+        
+        .message.info {
+            background: #e3f2fd;
+            border-left: 3px solid #2196f3;
+        }
+        
+        .message.error {
+            background: #ffebee;
+            border-left: 3px solid #f44336;
+        }
+        
+        .message.server {
+            background: #fff8e1;
+            border-left: 3px solid #ffc107;
+        }
+        
+        .message-content {
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #666;
+            text-align: left;
+            direction: ltr;
+        }
+        
+        .play-btn {
+            background: #4cc9f0;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-top: 5px;
+            cursor: pointer;
+        }
+        
+        .users-list {
+            list-style: none;
+        }
+        
+        .users-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+        
+        .users-list button {
+            width: auto;
+            padding: 3px 8px;
+            font-size: 12px;
+            background: #4895ef;
+            margin-right: 5px;
+        }
+        
+        .chat-footer {
+            padding: 12px 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .talk-button {
+            width: 100%;
+            padding: 12px;
+            background: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .talk-button.recording {
+            background: #f72585;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* پنل ادمین */
+        .admin-panel, .channel-page, .add-members-page {
+            padding: 15px;
+            width: 100%;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        @media (min-width: 768px) {
+            .admin-panel, .channel-page, .add-members-page {
+                max-width: 800px;
+                margin: 0 auto;
+                min-height: auto;
+            }
+        }
+        
+        .admin-panel h2, .channel-page h2, .add-members-page h2 {
+            color: #4361ee;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .channel-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .channel-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .channel-card h3 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .channel-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .channel-controls button {
+            flex: 1;
+            padding: 8px;
+            font-size: 13px;
+        }
+        
+        .back-btn {
+            background: #6c757d;
+            margin-top: 20px;
+        }
+        
+        .add-members-btn {
+            background: #4cc9f0;
+            margin-top: 15px;
+        }
+        
+        /* انیمیشن‌ها */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(247, 37, 133, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(247, 37, 133, 0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- صفحه ورود -->
+    <div id="loginPage" class="auth-page">
+        <h2><i class="fas fa-sign-in-alt"></i> ورود به سیستم</h2>
+        <div class="input-group">
+            <label for="username">نام کاربری</label>
+            <input type="text" id="username" placeholder="نام کاربری خود را وارد کنید">
+        </div>
+        <div class="input-group">
+            <label for="password">رمز عبور</label>
+            <input type="password" id="password" placeholder="رمز عبور خود را وارد کنید">
+        </div>
+        <div class="input-group">
+            <label for="channel">چنل</label>
+            <input type="text" id="channel" placeholder="نام چنل را وارد کنید">
+        </div>
+        <button id="loginBtn">ورود</button>
+        <div id="errorMessage" class="error-message"></div>
+        <div class="toggle-auth">
+            حساب کاربری ندارید؟ <a id="showRegister">ثبت نام کنید</a>
+        </div>
+    </div>
+
+    <!-- صفحه ثبت نام -->
+    <div id="registerPage" class="auth-page hidden">
+        <h2><i class="fas fa-user-plus"></i> ثبت نام کاربر جدید</h2>
+        <div class="input-group">
+            <label for="regUsername">نام کاربری</label>
+            <input type="text" id="regUsername" placeholder="نام کاربری خود را وارد کنید">
+        </div>
+        <div class="input-group">
+            <label for="regPassword">رمز عبور</label>
+            <input type="password" id="regPassword" placeholder="رمز عبور خود را وارد کنید">
+        </div>
+        <div class="input-group">
+            <label for="regConfirmPassword">تأیید رمز عبور</label>
+            <input type="password" id="regConfirmPassword" placeholder="رمز عبور را مجدداً وارد کنید">
+        </div>
+        <button id="registerBtn">ثبت نام</button>
+        <div id="regErrorMessage" class="error-message"></div>
+        <div class="toggle-auth">
+            حساب کاربری دارید؟ <a id="showLogin">وارد شوید</a>
+        </div>
+    </div>
+
+    <!-- صفحه چت اصلی -->
+    <div id="chatPage" class="chat-container hidden">
+        <div class="chat-header">
+            <div class="user-info">
+                <span>کاربر: <span id="currentUsername"></span></span>
+                <span>چنل: <span id="currentChannel"></span></span>
+            </div>
+            <button id="adminBtn" class="admin-btn hidden">
+                <i class="fas fa-cog"></i> پنل مدیریت
+            </button>
+        </div>
+        
+        <div class="chat-main">
+            <div class="messages-panel">
+                <div id="messagesContainer"></div>
+            </div>
+            
+            <div class="users-panel">
+                <h3><i class="fas fa-users"></i> کاربران آنلاین</h3>
+                <ul id="usersList" class="users-list"></ul>
+            </div>
+        </div>
+        
+        <div class="chat-footer">
+            <button id="talkButton" class="talk-button">
+                <i class="fas fa-microphone"></i> برای صحبت کلیک کنید
+            </button>
+            <div id="status" class="status">آماده</div>
+        </div>
+    </div>
+
+    <!-- پنل مدیریت ادمین -->
+    <div id="adminPage" class="admin-panel hidden">
+        <h2><i class="fas fa-cog"></i> پنل مدیریت</h2>
+        
+        <h3><i class="fas fa-plus-circle"></i> ایجاد چنل جدید</h3>
+        <div class="input-group">
+            <input type="text" id="newChannelName" placeholder="نام چنل جدید">
+        </div>
+        <button id="createChannelBtn">ایجاد چنل</button>
+        
+        <h3 style="margin-top: 20px;"><i class="fas fa-list"></i> لیست چنل‌ها</h3>
+        <div id="channelsList"></div>
+        
+        <button id="backToChat" class="back-btn">
+            <i class="fas fa-arrow-left"></i> بازگشت به چت
+        </button>
+    </div>
+
+    <!-- صفحه مدیریت چنل -->
+    <div id="channelPage" class="channel-page hidden">
+        <h2 id="channelTitle"><i class="fas fa-users"></i> مدیریت چنل</h2>
+        
+        <h3><i class="fas fa-user-friends"></i> اعضای چنل</h3>
+        <ul id="channelUsersList" class="users-list"></ul>
+        
+        <button id="addMembersBtn" class="add-members-btn">
+            <i class="fas fa-user-plus"></i> افزودن عضو جدید
+        </button>
+        
+        <button id="backToChat" class="back-btn">
+            <i class="fas fa-arrow-left"></i> بازگشت به چت
+        </button>
+    </div>
+
+    <!-- صفحه افزودن اعضای جدید به چنل -->
+    <div id="addMembersPage" class="add-members-page hidden">
+        <h2><i class="fas fa-user-plus"></i> افزودن عضو جدید</h2>
+        
+        <h3><i class="fas fa-users"></i> لیست کاربران</h3>
+        <ul id="allUsersList" class="users-list"></ul>
+        
+        <button id="saveMembersBtn" class="back-btn">
+            <i class="fas fa-save"></i> ذخیره تغییرات
+        </button>
+        
+        <button id="backToChannelBtn" class="back-btn">
+            <i class="fas fa-arrow-left"></i> بازگشت به مدیریت چنل
+        </button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+</html>
